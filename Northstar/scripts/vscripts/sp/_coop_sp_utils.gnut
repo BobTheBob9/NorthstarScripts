@@ -1,0 +1,69 @@
+//global const float COOP_RESPAWN_DELAY = 5.0 // this crashes for some reason???
+
+global function CoopSpUtils_Init
+
+global function GetPlayerToSpawnOn
+global function RestartWithoutDroppingPlayers
+
+global function SetPlayerInTimeline
+global function GetPlayersInTimeline
+
+struct TimeshiftPlayer 
+{
+	int timeline
+}
+
+struct 
+{
+	array< TimeshiftPlayer > timeshiftPlayers
+} file
+
+void function CoopSpUtils_Init()
+{
+	AddCallback_OnClientConnecting( OnClientConnecting )
+}
+
+void function OnClientConnecting( entity player )
+{
+	// create key/val pair of arrays
+	
+}
+
+entity ornull function GetPlayerToSpawnOn() 
+{
+	array< entity > possiblePlayers
+	foreach ( entity player in GetPlayerArray())
+	{
+		if ( IsAlive( player ))
+			possiblePlayers.append( player )
+	}
+		
+	if ( possiblePlayers.len() == 0 )
+		return null // everyone is dead
+		
+	return possiblePlayers[ RandomInt( possiblePlayers.len()) ]
+}
+
+void function RestartWithoutDroppingPlayers()
+{
+	// todo: make this deal with checkpoints/saves
+	ServerCommand( "changelevel " + GetMapName() )
+}
+
+
+//EFFECT AND CAUSE/TIMESHIFT STUFF
+
+bool function IsOnTimeshiftLevel()
+{
+	return false
+}
+
+void function SetPlayerInTimeline( entity player, int timeline )
+{
+
+}
+
+array< entity > function GetPlayersInTimeline( int timeline )
+{
+	return []
+}

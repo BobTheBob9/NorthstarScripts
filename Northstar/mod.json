@@ -1,0 +1,19 @@
+{
+	"ApiId" : "Northstar",
+	"Name" : "Northstar",
+	"Description" : "Various script patches to fix and reimplement functionality for coop and custom servers",
+	"Authors" : [
+		"BobTheBob"
+	],
+	"Contacts" : [
+		"BobTheBob#1150"
+	],
+	"Version" : "0.1",
+	"CustomScripts": [
+		{
+			"Path": "sp/_coop_sp_utils.gnut",
+			"RunOn": "SERVER",
+			"ServerCallback": "CoopSpUtils_Init"
+		}
+	]
+}
