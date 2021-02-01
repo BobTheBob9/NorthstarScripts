@@ -385,7 +385,7 @@ void function SPTimeshiftUtilityInit()
 	file.isDisplayingTimeshiftHint = false
 
 	level.allowTimeTravel <- false
-	level.isTimeTraveling <- false
+	//level.isTimeTraveling <- false
 	level.timeZone <- TIMEZONE_NIGHT
 	level.fogController <- null
 	//level.playerSpawn <- null
@@ -1467,8 +1467,8 @@ void function TriggerPushbackDamageThink( entity trigger )
 		player = null
 		result = trigger.WaitSignal( "OnStartTouch" )
 
-		if ( level.isTimeTraveling )
-			continue
+		//if ( level.isTimeTraveling )
+		//	continue
 
 		if ( !IsValid( result.activator ) )
 			continue
@@ -1483,6 +1483,9 @@ void function TriggerPushbackDamageThink( entity trigger )
 
 		//Damage and pushback player
 		player = expect entity( result.activator )
+		
+		if ( player.s.isTimeTraveling )
+			continue
 
 		player.TakeDamage( 50, svGlobal.worldspawn, svGlobal.worldspawn, { origin = player.GetOrigin(), scriptType = scriptTypeMask, damageSourceId = damageID } )
 		CreateShakeRumbleOnly( player.GetOrigin(), 10, 105, 1 )
@@ -1662,7 +1665,7 @@ void function SwapTimelinesThread( entity player, var timeZoneDestination )
 	if ( !CanTimeShift( player ) )
 		return
 
-	level.isTimeTraveling = true
+	player.s.isTimeTraveling = true
 
 	// no idea why respawn did this, but removing it doesn't seem to break anything
 	//entity player = GetPlayerArray()[0]
@@ -1690,7 +1693,7 @@ void function SwapTimelinesThread( entity player, var timeZoneDestination )
 		skyCam = GetEnt( "skybox_cam_night" )
 		
 		//level.timeZone = TIMEZONE_NIGHT
-		SetPlayerInTimeline( player, TIMEZONE_NIGHT )
+		player.s.timeline = TIMEZONE_NIGHT
 		
 		timeOffset = TIME_ZOFFSET * -1
 		
@@ -1716,7 +1719,7 @@ void function SwapTimelinesThread( entity player, var timeZoneDestination )
 		skyCam = GetEnt( "skybox_cam_day" )
 		
 		//level.timeZone = TIMEZONE_DAY
-		SetPlayerInTimeline( player, TIMEZONE_DAY )
+		player.s.timeline = TIMEZONE_DAY
 		
 		timeOffset = TIME_ZOFFSET
 		FreezeNpcs( TIMEZONE_NIGHT )
@@ -1755,12 +1758,20 @@ void function SwapTimelinesThread( entity player, var timeZoneDestination )
 		if ( timeZoneDestination == TIMEZONE_DAY )
 		{
 			printt( "***WARNING: Destination TimeShiftPos " + newPlayerPos + " is in solid. Using file.lastGoodTimeshiftPosPristine instead" )
-			newPlayerPos = file.lastGoodTimeshiftPosPristine
+			//newPlayerPos = file.lastGoodTimeshiftPosPristine
+			// use player script var instead
+			// this won't compile if we don't manually do type safety stuff here
+			var pos = player.s.lastGoodTimeshiftPosPristine
+			newPlayerPos = expect vector( pos )
 		}
 		else if ( timeZoneDestination == TIMEZONE_NIGHT )
 		{
 			printt( "***WARNING: Destination TimeShiftPos " + newPlayerPos + " is in solid. Using file.lastGoodTimeshiftPosOvergrown instead" )
-			newPlayerPos = file.lastGoodTimeshiftPosOvergrown
+			//newPlayerPos = file.lastGoodTimeshiftPosOvergrown
+			// use player script var instead
+			// this won't compile if we don't manually do type safety stuff here
+			var pos = player.s.lastGoodTimeshiftPosOvergrown
+			newPlayerPos = expect vector( pos )
 		}
 	}
 	else
@@ -1775,7 +1786,7 @@ void function SwapTimelinesThread( entity player, var timeZoneDestination )
 	const float EFFECT_DURATION_EASE_OUT = 0.5
 	StatusEffect_AddTimed( player, eStatusEffect.timeshift_visual_effect, 1.0, EFFECT_DURATION_TOTAL, EFFECT_DURATION_EASE_OUT )
 
-	Remote_CallFunction_NonReplay( player, "ServerCallback_TimeFlipped", level.timeZone )
+	Remote_CallFunction_NonReplay( player, "ServerCallback_TimeFlipped", player.s.timeline )
 	player.SetSkyCamera( skyCam )
 	if ( !IsAlive( player ) )
 		return
@@ -1796,7 +1807,7 @@ void function SwapTimelinesThread( entity player, var timeZoneDestination )
 		GruntChatter_TryEnemyTimeShifted( player )
 
 	ObjectiveCompensate( player, file.currentObjectiveEntity )
-	level.isTimeTraveling = false
+	player.s.isTimeTraveling = false
 
 	//thread SonarColorCorrection( player, 0.5, null )
 }
@@ -1925,7 +1936,7 @@ bool function CanTimeShift( entity player )
 	}
 	*/
 
-	if ( level.isTimeTraveling )
+	if ( player.s.isTimeTraveling )
 		return false
 
 	return true
@@ -1942,7 +1953,8 @@ function OnTimeShiftAbilityUsed( player )
 
 	}
 
-	if ( level.timeZone == TIMEZONE_DAY )
+	//if ( level.timeZone == TIMEZONE_DAY )
+	if ( player.s.timeline == TIMEZONE_DAY )
 		SwapTimelines( expect entity( player ), TIMEZONE_NIGHT )
 	else
 		SwapTimelines( expect entity( player ), TIMEZONE_DAY )
@@ -2183,7 +2195,7 @@ void function OnSpawnedNPC( entity npc )
 		return
 
 	var timeZone = GetEntityTimelinePosition( npc )
-
+	expect int(timeZone)
 
 	int difficulty = GetSpDifficulty()
 
@@ -2198,7 +2210,8 @@ void function OnSpawnedNPC( entity npc )
 	}
 
 	//If I just spawned in the opposite time zone as the player, freeze me
-	if ( ( level.timeZone != timeZone ) && ( timeZone != TIMEZONE_FROZEN ) )
+	//if ( ( level.timeZone != timeZone ) && ( timeZone != TIMEZONE_FROZEN ) )
+	if ( GetPlayersInTimeline( timeZone ).len() == 0 && timeZone != TIMEZONE_FROZEN )
 		FreezeNPC( npc )
 
 	if ( timeZone == TIMEZONE_FROZEN )
@@ -3215,14 +3228,17 @@ void function TriggerHazardThink( entity trigger )
 		player = null
 		result = trigger.WaitSignal( "OnTrigger" )
 
-		if ( level.isTimeTraveling )
-			continue
+		//if ( level.isTimeTraveling )
+		//	continue
 
 		if ( !IsValid( result.activator ) )
 			continue
 		if ( result.activator.IsPlayer() )
 		{
 			player = result.activator
+			
+			if ( player.s.isTimeTraveling )
+				continue
 
 			while ( trigger.IsTouching( player ) )
 			{
@@ -3677,9 +3693,11 @@ void function TimeshiftPlayerThink( entity player )
 		if ( !PlayerPosInSolid( player, playerOrigin ) )
 		{
 			if ( timeZoneCurrent == TIMEZONE_NIGHT )
-				file.lastGoodTimeshiftPosOvergrown = playerOrigin
+				//file.lastGoodTimeshiftPosOvergrown = playerOrigin
+				player.s.lastGoodTimeshiftPosOvergrown = playerOrigin
 			else if ( timeZoneCurrent == TIMEZONE_DAY )
-				file.lastGoodTimeshiftPosPristine = playerOrigin
+				//file.lastGoodTimeshiftPosPristine = playerOrigin
+				player.s.lastGoodTimeshiftPosPristine = playerOrigin
 			else
 				printl( "Player in frozen world, no need to run the TimeshiftPlayerThinkThread anymore" )
 		}
@@ -3696,12 +3714,14 @@ void function TimeshiftPlayerThink( entity player )
 		{
 			if ( timeZoneCurrent == TIMEZONE_NIGHT )
 			{
-				file.lastGoodTimeshiftPosPristine = posInOtherTimeline
+				//file.lastGoodTimeshiftPosPristine = posInOtherTimeline
+				player.s.lastGoodTimeshiftPosPristine = posInOtherTimeline
 
 			}
 			else if ( timeZoneCurrent == TIMEZONE_DAY )
 			{
-				file.lastGoodTimeshiftPosOvergrown = posInOtherTimeline
+				//file.lastGoodTimeshiftPosOvergrown = posInOtherTimeline
+				player.s.lastGoodTimeshiftPosOvergrown = posInOtherTimeline
 			}
 			else
 				printl( "Player in frozen world, no need to run the TimeshiftPlayerThinkThread anymore" )
@@ -3720,23 +3740,33 @@ void function TimeshiftPlayerThink( entity player )
 		//-------------------------------------------
 		// Assert if vectors are in the wrong timeline
 		//-------------------------------------------
-		Assert ( GetTimelinePosition( file.lastGoodTimeshiftPosPristine ) == TIMEZONE_DAY, "lastGoodTimeshiftPosPristine ( " + file.lastGoodTimeshiftPosPristine + " ) is not in the proper timeZone" )
-		Assert ( GetTimelinePosition( file.lastGoodTimeshiftPosOvergrown ) == TIMEZONE_NIGHT, "lastGoodTimeshiftPosPristine ( " + file.lastGoodTimeshiftPosPristine + " ) is not in the proper timeZone" )
-
+		//Assert ( GetTimelinePosition( file.lastGoodTimeshiftPosPristine ) == TIMEZONE_DAY, "lastGoodTimeshiftPosPristine ( " + file.lastGoodTimeshiftPosPristine + " ) is not in the proper timeZone" )
+		//Assert ( GetTimelinePosition( file.lastGoodTimeshiftPosOvergrown ) == TIMEZONE_NIGHT, "lastGoodTimeshiftPosPristine ( " + file.lastGoodTimeshiftPosPristine + " ) is not in the proper timeZone" )
+		Assert ( GetTimelinePosition( player.s.lastGoodTimeshiftPosPristine ) == TIMEZONE_DAY, "lastGoodTimeshiftPosPristine ( " + player.s.lastGoodTimeshiftPosPristine + " ) is not in the proper timeZone" )
+        Assert ( GetTimelinePosition( player.s.lastGoodTimeshiftPosOvergrown ) == TIMEZONE_NIGHT, "lastGoodTimeshiftPosPristine ( " + player.s.lastGoodTimeshiftPosPristine + " ) is not in the proper timeZone" )
+		
 		//---------------------------------------------------------------
 		// Check if disparity between ideal pos and proposed is too huge
 		//----------------------------------------------------------------
-		if ( ( DistanceSqr( file.lastGoodTimeshiftPosOvergrown, idealPosInOvergrown ) > minDistSqr ) && ( GetBugReproNum() == 88 ) )
+		//if ( ( DistanceSqr( file.lastGoodTimeshiftPosOvergrown, idealPosInOvergrown ) > minDistSqr ) && ( GetBugReproNum() == 88 ) )
+		if ( ( DistanceSqr( player.s.lastGoodTimeshiftPosOvergrown, idealPosInOvergrown ) > minDistSqr ) && ( GetBugReproNum() == 88 ) )
 		{
 			printl( "*****************WARNING:")
-			printt( "lastGoodTimeshiftPosOvergrown( " + file.lastGoodTimeshiftPosOvergrown + " > " + minDist + " from ( " +  idealPosInOvergrown + ")" )
-			thread DebugDrawBadTeleportBoxes( file.lastGoodTimeshiftPosOvergrown, idealPosInOvergrown )
+			//printt( "lastGoodTimeshiftPosOvergrown( " + file.lastGoodTimeshiftPosOvergrown + " > " + minDist + " from ( " +  idealPosInOvergrown + ")" )
+			printt( "lastGoodTimeshiftPosOvergrown( " + player.s.lastGoodTimeshiftPosOvergrown + " > " + minDist + " from ( " +  idealPosInOvergrown + ")" )
+			//thread DebugDrawBadTeleportBoxes( file.lastGoodTimeshiftPosOvergrown, idealPosInOvergrown )
+			var pos = player.s.lastGoodTimeshiftPosOvergrown
+			thread DebugDrawBadTeleportBoxes( expect vector( pos ), idealPosInOvergrown )
 		}
-		if ( ( DistanceSqr( file.lastGoodTimeshiftPosPristine, idealPosInPristine ) > minDistSqr ) && ( GetBugReproNum() == 88 ) )
+		//if ( ( DistanceSqr( file.lastGoodTimeshiftPosPristine, idealPosInPristine ) > minDistSqr ) && ( GetBugReproNum() == 88 ) )
+		if ( ( DistanceSqr( player.s.lastGoodTimeshiftPosPristine, idealPosInPristine ) > minDistSqr ) && ( GetBugReproNum() == 88 ) )
 		{
 			printl( "*****************WARNING:")
-			printt( "lastGoodTimeshiftPosPristine( " + file.lastGoodTimeshiftPosPristine + " > " + minDist + " from ( " +  idealPosInPristine + ")" )
-			thread DebugDrawBadTeleportBoxes( file.lastGoodTimeshiftPosPristine, idealPosInPristine )
+			//printt( "lastGoodTimeshiftPosPristine( " + file.lastGoodTimeshiftPosPristine + " > " + minDist + " from ( " +  idealPosInPristine + ")" )
+			printt( "lastGoodTimeshiftPosPristine( " + player.s.lastGoodTimeshiftPosPristine + " > " + minDist + " from ( " +  idealPosInPristine + ")" )
+			//thread DebugDrawBadTeleportBoxes( file.lastGoodTimeshiftPosPristine, idealPosInPristine )
+			var pos = player.s.lastGoodTimeshiftPosPristine
+			thread DebugDrawBadTeleportBoxes( expect vector( pos ), idealPosInPristine )
 		}
 		//Assert( DistanceSqr( file.lastGoodTimeshiftPosOvergrown, idealPosInOvergrown ) < minDistSqr, "lastGoodTimeshiftPosOvergrown( " + file.lastGoodTimeshiftPosOvergrown + " > " + minDist + " from ( " +  idealPosInOvergrown + ")" )
 		//Assert( DistanceSqr( file.lastGoodTimeshiftPosPristine, idealPosInPristine ) < minDistSqr, "lastGoodTimeshiftPosPristine( " + file.lastGoodTimeshiftPosPristine + " > " + minDist + " from ( " +  idealPosInPristine + ")" )

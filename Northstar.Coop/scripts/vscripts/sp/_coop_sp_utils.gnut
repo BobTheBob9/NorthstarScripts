@@ -1,3 +1,4 @@
+untyped
 //global const float COOP_RESPAWN_DELAY = 5.0 // this crashes for some reason???
 
 global function CoopSpUtils_Init
@@ -5,18 +6,8 @@ global function CoopSpUtils_Init
 global function GetPlayerToSpawnOn
 global function RestartWithoutDroppingPlayers
 
-global function SetPlayerInTimeline
+global function IsPlayingTimeshiftLevel
 global function GetPlayersInTimeline
-
-struct TimeshiftPlayer 
-{
-	int timeline
-}
-
-struct 
-{
-	array< TimeshiftPlayer > timeshiftPlayers
-} file
 
 void function CoopSpUtils_Init()
 {
@@ -25,8 +16,14 @@ void function CoopSpUtils_Init()
 
 void function OnClientConnecting( entity player )
 {
-	// create key/val pair of arrays
-	
+	// add custom script vars
+	if ( IsPlayingTimeshiftLevel() )
+	{
+		player.s.timeline <- 1 // TIMEZONE_NIGHT
+		player.s.isTimeTraveling <- false
+		player.s.lastGoodTimeshiftPosOvergrown <- <0, 0, 0>
+		player.s.lastGoodTimeshiftPosPristine <- <0, 0, 0>
+	}
 }
 
 entity ornull function GetPlayerToSpawnOn() 
@@ -41,7 +38,7 @@ entity ornull function GetPlayerToSpawnOn()
 	if ( possiblePlayers.len() == 0 )
 		return null // everyone is dead
 		
-	return possiblePlayers[ RandomInt( possiblePlayers.len()) ]
+	return possiblePlayers[ RandomInt( possiblePlayers.len() ) ]
 }
 
 void function RestartWithoutDroppingPlayers()
@@ -53,17 +50,22 @@ void function RestartWithoutDroppingPlayers()
 
 //EFFECT AND CAUSE/TIMESHIFT STUFF
 
-bool function IsOnTimeshiftLevel()
-{
-	return false
-}
 
-void function SetPlayerInTimeline( entity player, int timeline )
+bool function IsPlayingTimeshiftLevel()
 {
-
+	// sp_timeshift levels don't always start with level.allowTimeTravel == true, so we need to do the name check too
+	var idx = GetMapName().find( "sp_timeshift" )
+	return idx == 0 || level.allowTimeTravel == true
 }
 
 array< entity > function GetPlayersInTimeline( int timeline )
 {
-	return []
+	array< entity > playersInTimeline
+	foreach ( entity player in GetPlayerArray() )
+	{
+		if ( player.s.timeline == timeline )
+			playersInTimeline.append( player )
+	}
+	
+	return playersInTimeline
 }

@@ -1,0 +1,24 @@
+{
+	"ApiId" : "Northstar.Coop",
+	"Name" : "Northstar.Coop",
+	"Description" : "Various script patches to fix and reimplement functionality for coop and custom servers",
+	"Authors" : [
+		"BobTheBob"
+	],
+	"Contacts" : [
+		"BobTheBob#1150"
+	],
+	"Version" : "0.1",
+	"CustomScripts": [
+		{
+			"Path": "autoprecache.gnut",
+			"RunOn": "CLIENT || SERVER",
+			"ClientCallback": "AutoPrecache",
+			"ServerCallback": "AutoPrecache",
+		},
+		{
+			"Path": "weapons/mp_weapon_peacekraber.nut",
+			"RunOn": "CLIENT || SERVER",
+		}
+	]
+}

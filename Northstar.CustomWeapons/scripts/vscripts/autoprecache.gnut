@@ -1,0 +1,6 @@
+global function AutoPrecache
+
+void function AutoPrecache()
+{
+	PrecacheWeapon( "mp_weapon_peacekraber" )
+}

@@ -325,13 +325,15 @@ void function CodeCallback_OnClientConnectionStarted( entity player )
 	player.s.meleeSlowMoEndTime <- 0.0
 
 	Assert( !player._entityVars )
-	InitEntityVars( player )
 
 	// Added via AddCallback_OnClientConnecting
 	foreach ( callbackFunc in svGlobal.onClientConnectingCallbacks )
 	{
 		callbackFunc( player )
 	}
+	
+	// do this after callbacks so we can define our own player script vars in callbacks
+	InitEntityVars( player )
 
 	printl( "Player connect started: " + player )
 
