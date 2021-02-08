@@ -207,8 +207,8 @@ void function SpPlayerConnecting( entity player )
 	else
 	{
 		expect entity( spawningOn )
-		player.SetOrigin( spawningOn.GetOrigin() )
-		player.SetAngles( spawningOn.GetAngles() )
+		// use safe func otherwise we can get stuck in the ceiling and shit
+		thread TeleportToEntitySafe( player, spawningOn )
 	}
 
 	if ( IsValid( file.spPetTitanStart ) )

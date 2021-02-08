@@ -15,5 +15,10 @@
 			"RunOn": "SERVER",
 			"ServerCallback": "CoopSpUtils_Init"
 		},
+		{
+			"Path": "sp/sh_coop_sp_utils.gnut",
+			"RunOn": "CLIENT || SERVER",
+			"ServerCallback": "ClCoopSpUtils_Init"
+		}
 	]
 }

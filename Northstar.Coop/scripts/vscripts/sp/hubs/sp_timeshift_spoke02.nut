@@ -639,7 +639,8 @@ void function AA_WildlifeResearchThread( entity player )
 	CleanupEnts( "civilian_actor_firehall02" )
 
 
-	FlagClear( "open_creature_door_start_pristine" )
+	// remove this so we don't softlock other players lol
+	//FlagClear( "open_creature_door_start_pristine" )
 
 	objectivePos = GetEntByScriptName( "objective_spoke1_breadcrumb000" ).GetOrigin()
 	TimeshiftUpdateObjective( player, objectivePos )

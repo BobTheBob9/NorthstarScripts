@@ -550,12 +550,12 @@ void function SkipReloadDelay_Thread( entity player )
 
 bool function RespawnNowSP( entity player, array<string> args )
 {
-	// this command is always bound now so we need to make sure it isn't called while player is alive
+	// this clientcommand is always bound now so we need to make sure it isn't called while player is alive
 	if ( IsAlive( player ))
 		return true
 		
-	// todo: wait a few seconds before we allow respawns
-	if ( Time() - player.p.postDeathThreadStartTime < 5.0 )
+	// wait a few seconds before we allow respawns
+	if ( player.nv.nextRespawnTime > Time() )
 		return true
 
 	//thread SkipReloadDelay_Thread( player )
@@ -574,7 +574,10 @@ bool function RespawnNowSP( entity player, array<string> args )
 		expect entity( respawningOn )
 		// HACK: compiler has a fit if we directly call player.RespawnPlayer in this file
 		// 		 so we need to make a functionref in another file that does it
+		
 		hackRespawnPlayerFunc( player, respawningOn )
+		// honestly unsure if the respawningOn arg works with players so manually set pos too
+		thread TeleportToEntitySafe( player, respawningOn )
 	}
 
 	
