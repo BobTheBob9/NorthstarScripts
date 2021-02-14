@@ -1,0 +1,8 @@
+globalize_all_functions
+
+void function SpawnPropWithModel( asset mdl )
+{
+	entity prop = CreateEntity( "prop_dynamic" )
+	prop.SetOrigin( prop.GetOrigin() )
+	prop.SetModel( mdl )
+}

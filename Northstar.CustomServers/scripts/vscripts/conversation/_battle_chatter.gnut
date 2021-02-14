@@ -1,0 +1,18 @@
+global function BattleChatter_Init
+global function PlayBattleChatterLine
+global function TryPlayWeaponBattleChatterLine
+
+void function BattleChatter_Init()
+{
+
+}
+
+void function PlayBattleChatterLine(entity player, string name)
+{
+
+}
+
+void function TryPlayWeaponBattleChatterLine(entity player, entity weapon)
+{
+
+}

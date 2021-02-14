@@ -1,0 +1,12 @@
+global function GruntChatter_MP_Init
+global function PlayGruntChatterMPLine
+
+void function GruntChatter_MP_Init()
+{
+
+}
+
+void function PlayGruntChatterMPLine(entity grunt, string name)
+{
+
+}

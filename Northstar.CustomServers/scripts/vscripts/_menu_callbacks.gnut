@@ -1,0 +1,6 @@
+global function MenuCallbacks_Init
+
+void function MenuCallbacks_Init()
+{
+
+}

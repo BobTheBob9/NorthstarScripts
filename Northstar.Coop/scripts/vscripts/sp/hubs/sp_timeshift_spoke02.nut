@@ -180,6 +180,8 @@ void function EntitiesDidLoad()
 
 	thread AndersonSetup()
 
+	// coop code: fuck with entities so we can prevent some weird flags
+	//array< entity > doors = 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -992,7 +994,7 @@ void function AA_FirstTimeshiftFightThread( entity player )
 
 	FlagWait( "crossed_elevator_fire_chasm" )
 
-	FlagClear( "open_door_elevator_fight_hallway_both" )
+	//FlagClear( "open_door_elevator_fight_hallway_both" )
 	FlagClear( "ShowMobilityGhostTurretFirepit" )
 	CleanupEnts( "flyer_lab" )
 	CleanupEnts( "lab_prowlers" )
@@ -1119,7 +1121,7 @@ void function AA_ElevatorFightThread( entity player )
 
 	thread MusicElevatorFight( player )
 
-	FlagClear( "open_door_elevator_fight_hallway_both" )
+	//FlagClear( "open_door_elevator_fight_hallway_both" )
 
 	CheckPoint()
 

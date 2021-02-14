@@ -1,7 +1,7 @@
 {
-	"ApiId" : "Northstar.Coop",
-	"Name" : "Northstar.Coop",
-	"Description" : "Various script patches to fix and reimplement functionality for coop and custom servers",
+	"ApiId" : "Northstar.Custom",
+	"Name" : "Northstar.Custom",
+	"Description" : "Additional content for coop and custom multiplayer servers",
 	"Authors" : [
 		"BobTheBob"
 	],

@@ -1,0 +1,36 @@
+global function BaseGametype_Init_MPSP
+global function SetGameState
+global function ShouldEntTakeDamage_SPMP
+global function GetTitanBuildTime
+global function DecideRespawnPlayer
+global function TitanPlayerHotDropsIntoLevel
+
+void function BaseGametype_Init_MPSP()
+{
+
+}
+
+void function SetGameState(int newState)
+{
+
+}
+
+bool function ShouldEntTakeDamage_SPMP( entity ent, var damageInfo )
+{
+	return true
+}
+
+float function GetTitanBuildTime(entity player)
+{
+	return 100.0
+}
+
+void function DecideRespawnPlayer( entity player )
+{
+
+}
+
+void function TitanPlayerHotDropsIntoLevel( entity player )
+{
+
+}

@@ -1,0 +1,24 @@
+global function FactionDialogue_Init
+global function InitFactionDialoguePersistence
+global function PlayFactionDialogueToPlayer
+global function PlayFactionDialogueToTeam
+
+void function FactionDialogue_Init()
+{
+
+}
+
+void function InitFactionDialoguePersistence(entity player)
+{
+
+}
+
+void function PlayFactionDialogueToPlayer(string dialogueid, entity player)
+{
+
+}
+
+void function PlayFactionDialogueToTeam(string dialogueid, int team)
+{
+
+}

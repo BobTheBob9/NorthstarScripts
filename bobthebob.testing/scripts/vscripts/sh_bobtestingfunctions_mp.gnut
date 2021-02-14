@@ -1,0 +1,32 @@
+globalize_all_functions
+
+void function DumpPdefEnum( string pdefEnum )
+{
+	for ( int i = 0; i < PersistenceGetEnumCount( pdefEnum ); i++ )
+		print( PersistenceGetEnumItemNameForIndex( pdefEnum, i ) )
+}
+
+void function ListPlayers()
+{
+	foreach ( entity player in GetPlayerArray() )
+	{
+		if ( player == null )
+			continue
+	
+		print( "player " + player.GetPlayerName() + ": G" + player.GetGen() + "." + player.GetLevel() )
+	}
+}
+
+void function DumpPdefTable()
+{
+	foreach ( key0, value0 in shGlobalMP.playerStatVars )
+	{
+		foreach ( key1, value1 in value0 )
+		{
+			foreach ( key2, statData in value1 )
+			{
+				print ( statData.statVar )
+			}
+		}
+	}
+}

@@ -1,0 +1,6 @@
+global function PowerUps_Init
+
+void function PowerUps_Init()
+{
+	SH_PowerUp_Init()
+}

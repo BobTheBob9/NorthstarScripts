@@ -6,6 +6,7 @@ global function CoopSpUtils_Init
 global function GetPlayerToSpawnOn
 global function RestartWithoutDroppingPlayers
 global function TeleportToEntitySafe
+global function GetEntitiesByEditorClass
 
 global function GetPlayersInTimeline
 
@@ -142,6 +143,22 @@ bool function PlayerPosInSolidIgnoreOtherPlayers( entity player, vector targetPo
 	
 	TraceResults traceResult = TraceHull( targetPos, targetPos + <0, 0, 1>, player.GetPlayerMins(), maxs, GetPlayerArray(), TRACE_MASK_PLAYERSOLID, TRACE_COLLISION_GROUP_PLAYER )
 	return traceResult.startSolid
+}
+
+array< entity > function GetEntitiesByEditorClass( string editorClass )
+{
+	array< entity > ret
+	for ( int i = 0; i < 2048 /*max ents in source*/; i++ )
+	{
+		entity ent = GetEntByIndex( i )
+		if ( ent == null )
+			continue
+			
+		if ( GetEditorClass( ent ) == editorClass )
+			ret.append( ent )
+	}
+	
+	return ret
 }
 
 

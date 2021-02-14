@@ -1,0 +1,12 @@
+global function Evac_Init
+global function IsEvacDropship
+
+void function Evac_Init()
+{
+
+}
+
+bool function IsEvacDropship(entity ent)
+{
+	return false
+}
