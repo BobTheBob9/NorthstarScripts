@@ -393,12 +393,11 @@ float function EvaluatePolynomial( float x, array<float> coefficientArray )
 
 void function WaitForever()
 {
-	//
-	//#if SERVER
-	//	svGlobal.levelEnt.WaitSignal( "forever" )
-	//#elseif CLIENT
-	//	clGlobal.levelEnt.WaitSignal( "forever" )
-	//#endif
+	#if SERVER
+		svGlobal.levelEnt.WaitSignal( "forever" )
+	#elseif CLIENT
+		clGlobal.levelEnt.WaitSignal( "forever" )
+	#endif
 }
 
 #if SERVER

@@ -22,7 +22,7 @@ global struct ZipLine
 	entity end
 }
 
-global int HUMAN_RAGDOLL_IMPACT_TABLE_IDX = 42
+global int HUMAN_RAGDOLL_IMPACT_TABLE_IDX = -1
 
 global struct ArrayDotResultStruct
 {

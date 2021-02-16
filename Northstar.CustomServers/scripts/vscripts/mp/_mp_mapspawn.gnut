@@ -9,7 +9,7 @@ global SvSpawnGlobals svSpawnGlobals
 
 void function SPMP_MapSpawn_Init()
 {
-	printl( "Code Script: _sp_mapspawn" )
+	printl( "Code Script: _mp_mapspawn" )
 
 	svGlobal.npcsSpawnedThisFrame_scriptManagedArray[ TEAM_IMC ] <- CreateScriptManagedEntArray()
 	svGlobal.npcsSpawnedThisFrame_scriptManagedArray[ TEAM_MILITIA ] <- CreateScriptManagedEntArray()
@@ -47,12 +47,13 @@ void function SPMP_MapSpawn_Init()
 	
 	AddSpawnCallback( "trigger_hurt", InitDamageTriggers )
 
-	AddSpawnCallbackEditorClass( "func_brush", 					"func_brush_navmesh_separator", NavmeshSeparatorThink )
+	AddSpawnCallbackEditorClass( "func_brush", "func_brush_navmesh_separator", NavmeshSeparatorThink )
 	
 	//AddCallback_EntitiesDidLoad( ActivateSkyBox )
 
 	AddSpawnCallback( "player", MP_PlayerPostInit )
 
+	// unsure if this should be done here, but it's required for mp to load
 	PrecacheModel( $"models/menu/default_environment.mdl" )
 
 	SPMP_Shared_Init()

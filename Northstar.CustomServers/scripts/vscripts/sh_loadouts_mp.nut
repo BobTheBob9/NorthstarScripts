@@ -1,3 +1,5 @@
+// despite the name this is NOT a shared script
+
 global function GetTitanLoadoutForPlayer
 global function GetNPCDefaultWeaponForLevel
 global function GetTitanLoadoutForCurrentMap
