@@ -3,10 +3,10 @@ global function BaseGametype_Init_MPSP
 global function CodeCallback_OnClientConnectionStarted
 global function CodeCallback_OnClientConnectionCompleted
 global function CodeCallback_OnClientDisconnected
+global function DecideRespawnPlayer
 
 global function ShouldEntTakeDamage_SPMP
 global function GetTitanBuildTime
-global function DecideRespawnPlayer
 global function TitanPlayerHotDropsIntoLevel
 
 void function BaseGametype_Init_MPSP()
@@ -84,6 +84,10 @@ void function CodeCallback_OnClientConnectionStarted( entity player )
 	printl( "Player connect started: " + player )
 	
 	InitPassives( player )
+	
+	// temp
+	if ( GetPlayerArray().len() > 0 )
+		player.SetOrigin( GetPlayerArray()[0].GetOrigin() )
 
 	//thread PilotHealthRegenThinkSP( player )
 }
@@ -117,8 +121,8 @@ void function CodeCallback_OnClientConnectionCompleted( entity player )
 
 	// Player was already positioned at info_player_start in SpPlayerConnecting.
 	// Don't reposition him, in case movers have already pushed him.
-	player.RespawnPlayer( null )
-	// AddPlayerMovementEventCallback( player, ePlayerMovementEvents.BEGIN_WALLRUN, Callback_WallrunBegin )
+	//player.RespawnPlayer( null )
+	//AddPlayerMovementEventCallback( player, ePlayerMovementEvents.BEGIN_WALLRUN, Callback_WallrunBegin )
 }
 
 void function CodeCallback_OnClientDisconnected( entity player, string reason )
@@ -144,6 +148,10 @@ void function CodeCallback_OnClientDisconnected( entity player, string reason )
 	player.CleanupMPClasses()
 }
 
+void function DecideRespawnPlayer( entity player )
+{
+
+}
 
 // stuff to change later
 
@@ -157,11 +165,6 @@ bool function ShouldEntTakeDamage_SPMP( entity ent, var damageInfo )
 float function GetTitanBuildTime(entity player)
 {
 	return 100.0
-}
-
-void function DecideRespawnPlayer( entity player )
-{
-
 }
 
 void function TitanPlayerHotDropsIntoLevel( entity player )

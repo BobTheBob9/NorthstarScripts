@@ -2,6 +2,11 @@ untyped
 global function ClassicMp_Init
 global function ClassicMP_TryDefaultIntroSetup
 global function ClassicMP_SetIntroLevelSetupFunc
+global function ClassicMP_SetIntroPlayerSpawnFunc
+global function ClassicMP_SetPrematchSpawnPlayersFunc
+global function ClassicMP_CallIntroLevelSetupFunc
+global function ClassicMP_CallIntroPlayerSpawnFunc
+global function ClassicMP_CallPrematchSpawnPlayersFunc
 global function GetClassicMPMode
 
 struct {
@@ -11,7 +16,9 @@ struct {
 	array< string > dropshipJumpPOVAnimsList
 	array< int > dropshipAnimsYawList
 	
-	void functionref() introPlayerSpawnFunc
+	bool functionref() introLevelSetupFunc
+	void functionref( entity ) introPlayerSpawnFunc
+	void functionref( array< entity > ) prematchSpawnPlayersFunc
 } file
 
 void function ClassicMp_Init()
@@ -40,6 +47,9 @@ void function ClassicMp_Init()
 
 	FlagInit( "ClassicMP_UsingCustomIntro", false )
 	FlagInit( "GameModeAlwaysAllowsClassicIntro", false )
+	
+	level.classicMP_levelSetupForIntro <- false
+	level.canStillSpawnIntoIntro <- false
 }
 
 void function ClassicMP_TryDefaultIntroSetup()
@@ -59,10 +69,37 @@ void function ClassicMP_TryDefaultIntroSetup()
 	AddSpawnCallback( "info_spawnpoint_dropship_start", OnDropshipStartSpawn )
 }
 
-void function ClassicMP_SetIntroLevelSetupFunc( var setupFunc )
+void function ClassicMP_SetIntroLevelSetupFunc( bool functionref() setupFunc )
 {
+	file.introLevelSetupFunc = setupFunc
+}
+
+void function ClassicMP_SetIntroPlayerSpawnFunc( void functionref( entity ) playerSpawnFunc )
+{
+	file.introPlayerSpawnFunc = playerSpawnFunc
+}
+
+void function ClassicMP_SetPrematchSpawnPlayersFunc( void functionref( array< entity > ) spawnPlayersFunc )
+{
+	file.prematchSpawnPlayersFunc = spawnPlayersFunc
+}
+
+bool function ClassicMP_CallIntroLevelSetupFunc()
+{
+	if ( file.introLevelSetupFunc != null )
+		return file.introLevelSetupFunc()
 	
-	level.classicMP_introLevelSetupFunc <- setupFunc
+	return false
+}
+
+void function ClassicMP_CallIntroPlayerSpawnFunc( entity player )
+{
+	file.introPlayerSpawnFunc( player )
+}
+
+void function ClassicMP_CallPrematchSpawnPlayersFunc( array< entity > players )
+{
+	file.prematchSpawnPlayersFunc( players )
 }
 
 void function OnDropshipStartSpawn( entity dropship )

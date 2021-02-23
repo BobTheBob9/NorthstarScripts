@@ -38,6 +38,7 @@ void function SPMP_MapSpawn_Init()
 	FlagInit( "ReadyToStartMatch" ) // past waiting for players, in prematch
 
 	RegisterSignal( "OnChangedPlayerClass" )
+	RegisterSignal( "Disconnected" )
 	RegisterSignal( "_disconnectedInternal" )
 	RegisterSignal( "TeamChange" )
 	RegisterSignal( "LeftClass" )

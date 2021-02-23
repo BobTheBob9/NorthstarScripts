@@ -1,4 +1,4 @@
-{
+disabled{
 	"ApiId" : "Northstar.CustomServers",
 	"Name" : "Northstar.CustomServers",
 	"Description" : "Various script patches to fix and reimplement functionality for custom multiplayer servers",
